@@ -9,6 +9,7 @@ int main(){
 
     int min = 0;
     int max = 100;
+    int tries = 0;
 
     int randomNum = (rand() % (max - min)) + min;
 
@@ -19,11 +20,13 @@ int main(){
     scanf("%d", &guess);
 
     if (guess == randomNum) {
+        tries++;
         printf("You win!");
         return 0;
     }
 
     while (!won) {
+        tries++;
         printf("Wrong Answer! Guess again: ");
         scanf("%d", & guess);
 
