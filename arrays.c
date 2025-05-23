@@ -10,9 +10,23 @@ int main(){
         printf("%d\n", numbers[i]);
     }
 
-    printf("%d", sizeof(numbers)); // sizeof() gives the size of a variable in bytes
+    printf("%d\n", sizeof(numbers)); // sizeof() gives the size of a variable in bytes
     
     int length = sizeof(numbers) / sizeof(numbers[0]);
+    
+    printf("The number of elements in this array is %d\n", length);
+
+    int userNums[5] = {0};
+
+    for (int i = 0; i < 5; i++){
+        printf("Please enter an integer: ");
+        scanf("%d", &userNums[i]);
+    }
+
+    for (int i = 0; i < 5; i++){
+        printf("%d ", userNums[i]);
+    }
+
 
 
     return 0;
