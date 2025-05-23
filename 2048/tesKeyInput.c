@@ -16,7 +16,7 @@ char getch_unix()
 }
 
 int main(){
-    char input;
+    char input; 
 
     while (1){
 
