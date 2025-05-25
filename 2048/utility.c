@@ -3,6 +3,7 @@
 #include <unistd.h>  // used in getch_unix()
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "utility.h"
 
 // CODE: the implementation of functions and related variables 
@@ -172,7 +173,7 @@ int move_up(int board[size][size]){
     return moved;
 }
 
-int move_Down(int board[size][size]){
+int move_down(int board[size][size]){
     int moved = 0;
     for (int j = 0; j < size; j++){
         int temp[size];
@@ -220,3 +221,73 @@ int move_Down(int board[size][size]){
     return moved;
 }
 
+void make_board(int board[size][size]){
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            board[i][j] = 0;
+        }
+    }
+}
+
+void add_random_tile(int board[size][size]){
+
+    int randomRow;
+    int randomCol;
+    do {
+        randomRow = rand() % size;
+        randomCol = rand() % size;
+    }   while (board[randomRow][randomCol] != 0);
+
+    if (rand() % 10 == 0){
+        board[randomRow][randomCol] = 4;
+    } else {
+        board[randomRow][randomCol] = 2;
+    }
+}
+
+void draw_board(int board[size][size]){
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            if (board[i][j] == 0){
+                printf("%3s", ".");
+            } else {
+                printf("%3d", board[i][j]);
+            }
+        }
+        printf("\n");
+    }
+}
+
+int is_full(int board[size][size]){
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            if (board[i][j] == 0){
+                return 0;
+            }
+        }
+    }
+
+    return 1;
+}
+
+int can_move(int board[size][size]){
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            if (board[i][j] == 0){
+                return 1;
+            }
+        }   
+    }
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            if (j + 1 < size && board[i][j] == board[i][j+1]){
+                return 1;
+            }
+            if (i + 1 < size && board[i][j] == board[i+1][j]){
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}

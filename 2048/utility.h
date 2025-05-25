@@ -1,6 +1,7 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+
 #define size 4
 
 // CODE: the declarations [only the necessary ones] of functiona and related variables 
