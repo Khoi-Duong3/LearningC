@@ -11,4 +11,4 @@ double** subtractMatrices(double **A, double **B, int nA, int mA, int nB, int mB
 
 // CODE: include ONLY the declaration of primary functions
 
-#endif
+#endif 
