@@ -142,31 +142,31 @@ int gaussianElimination(double **Augmented, int nA, int mA){
     // The size of the augmented matrix is nA x (mA + 1). mA here just covers the original A matrix.
     
     for (int col = 0; col < mA; col++) {
-        // 1) Find best pivot in rows [rank..nA-1]
+        // 1 Find best pivot in rows [rank..nA-1]
         int pivot = rank;
         for (int r = rank + 1; r < nA; r++) {
             if (fabs(Augmented[r][col]) > fabs(Augmented[pivot][col]))
                 pivot = r;
         }
 
-        // 2) If pivot is “zero,” skip this column, we use epsilon here to avoid dealing with very small numbers
+        // 2 If pivot is “zero,” skip this column, we use epsilon here to avoid dealing with very small numbers
         if (fabs(Augmented[pivot][col]) < EPSILON)
             continue;
 
-        // 3) Swap pivot row into place (row = rank)
+        // 3 Swap pivot row into place (row = rank)
         if (pivot != rank) {
             double *temp = Augmented[rank];
             Augmented[rank] = Augmented[pivot];
             Augmented[pivot] = temp;
         }
 
-        // 4) Normalize pivot row so Augmented[rank][col] == 1
+        // 4 Normalize pivot row so Augmented[rank][col] == 1
         double diag = Augmented[rank][col];
         for (int c = col; c <= mA; c++) {
             Augmented[rank][c] /= diag;
         }
 
-        // 5) Eliminate below
+        // 5 Eliminate below
         for (int r = rank + 1; r < nA; r++) {
             double factor = Augmented[r][col];
             for (int c = col; c <= mA; c++) {
@@ -241,4 +241,57 @@ double* solveSLE(double **A, double *B, int nA, int mA){
 
     freeMatrix(augmentedMatrix, nA);
     return xVector;
+}
+
+double determinant(double **A, int nA, int mA){
+    if (nA != mA){
+        printf("Non square matrices do not have determinants");
+        return 0.0;
+    }
+
+    double **temp = allocateMatrix(nA, mA);
+    double determinant = 1.0;
+
+    for (int i = 0; i < nA; i++){
+        for (int j = 0; j < mA; j++){
+            temp[i][j] = A[i][j];
+        }
+    }
+
+    int rank = 0;
+
+    for (int col = 0; col < mA; col++){
+        int pivot = rank;
+        for (int r = rank + 1; r < nA; r++){
+            if (fabs(temp[r][col]) > fabs(temp[pivot][col])){
+                pivot = r;
+            }
+        }
+
+        if (fabs(temp[pivot][col]) < EPSILON){
+            determinant = 0.0;
+            break;
+        }
+            
+
+        if (pivot != rank){
+            double *tempRow = temp[rank];
+            temp[rank] = temp[pivot];
+            temp[pivot] = tempRow;
+            determinant = -determinant;
+        }
+        determinant *= temp[rank][col];
+
+        for (int r = rank + 1; r <nA; r++){
+            double factor = temp[r][col];
+            for (int c = col; c < mA; c++){
+                temp[r][c] -= factor * temp[rank][c];
+            }
+        }
+        rank++;
+    }
+
+    freeMatrix(temp, nA);
+    return determinant;
+
 }
