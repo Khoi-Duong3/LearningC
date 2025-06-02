@@ -1,8 +1,10 @@
 // CODE 1: Include necessary library(ies)
+#define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <errno.h>
+#include <string.h>
 #include "myDSLib.h"
 
 // -----------------
@@ -24,7 +26,151 @@ unsigned int hash_string(const char* str) {
     return (unsigned int)(hash % INDEX_SIZE);
 }
 
+static char *strip_quotes(char *s) {
+    size_t len = strlen(s);
+    if (len >= 2 && s[0] == '"' && s[len-1] == '"') {
+        s[len-1] = '\0';    // remove trailing quote
+        return s + 1;       // skip leading quote
+    }
+    return s;
+}
+
 static int parse_csv_to_record(const char *buffer, Record *Rec){
+
+    char parseBuffer[1024];
+    strncpy(parseBuffer, buffer, sizeof(parseBuffer) - 1);
+    parseBuffer[sizeof(parseBuffer) - 1] = '\0';
+
+    char *token = strtok(parseBuffer, ",");
+    if (!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    strncpy((*Rec).transaction_id, token, MAX_TRANSACTION_ID_LEN);
+    (*Rec).transaction_id[MAX_TRANSACTION_ID_LEN - 1] = '\0';
+
+    token = strtok(NULL, ",");
+    if (!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    (*Rec).price = (unsigned) strtoul(token, NULL, 10);
+
+    token = strtok(NULL, ",");
+    if (!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    {
+        int year, month, day;
+        if (sscanf(token, "%4d-%2d-%2d", &year, &month, &day) != 3){
+            return -1;
+        }
+        (*Rec).date.year = year;
+        (*Rec).date.month = month;
+        (*Rec).date.day = day;
+    }
+
+    token = strtok(NULL, ",");
+    if(!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    strncpy((*Rec).postcode, token, MAX_POSTCODE_LEN);
+    (*Rec).postcode[MAX_POSTCODE_LEN - 1] = '\0';
+
+    token = strtok(NULL, ",");
+    if (!token || strlen(token) < 1){
+        return -1;
+    }
+    token = strip_quotes(token);
+    (*Rec).property_type = token[0];
+
+    token = strtok(NULL, ",");
+    if (!token || strlen(token) < 1){
+        return -1;
+    }
+    token = strip_quotes(token);
+    (*Rec).old_new = token[0];
+
+    token = strtok(NULL, ",");
+    if (!token || strlen(token) < 1){
+        return -1;
+    }
+    token = strip_quotes(token);
+    (*Rec).duration = token[0];
+
+    token = strtok(NULL, ",");
+    if (!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    strncpy((*Rec).paon, token, MAX_FIELD_LEN);
+    (*Rec).paon[MAX_FIELD_LEN - 1] = '\0';
+
+    token = strtok(NULL, ",");
+    if (!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    strncpy((*Rec).saon, token, MAX_FIELD_LEN);
+    (*Rec).saon[MAX_FIELD_LEN - 1] = '\0';
+
+    token = strtok(NULL, ",");
+    if(!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    strncpy((*Rec).street, token, MAX_FIELD_LEN);
+    (*Rec).street[MAX_FIELD_LEN - 1] = '\0';
+
+    token = strtok(NULL, ",");
+    if(!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    strncpy((*Rec).locality, token, MAX_FIELD_LEN);
+    (*Rec).locality[MAX_FIELD_LEN - 1] = '\0';
+
+    token = strtok(NULL, ",");
+    if(!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    strncpy((*Rec).town, token, MAX_FIELD_LEN);
+    (*Rec).town[MAX_FIELD_LEN - 1] = '\0';
+
+    token = strtok(NULL, ",");
+    if(!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    (*Rec).district = strdup(token);
+    if (!(*Rec).district){
+        return -1;
+    }
+
+    token = strtok(NULL, ",");
+    if(!token){
+        return -1;
+    }
+    token = strip_quotes(token);
+    strncpy((*Rec).county, token, MAX_FIELD_LEN);
+    (*Rec).county[MAX_FIELD_LEN - 1] = '\0';
+
+    token = strtok(NULL, ",");
+    if (!token || strlen(token) < 1){
+        return -1;
+    }
+    token = strip_quotes(token);
+    (*Rec).record_status = token[0];
+
+    token = strtok(NULL, ",");
+    if (!token || strlen(token) < 1){
+        return -1;
+    }
+    token = strip_quotes(token);
+    (*Rec).blank_col = token[0];
 
     return 0;
 }

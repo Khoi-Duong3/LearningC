@@ -11,8 +11,8 @@
 int main() {
 
     // A flag to print search results or not
-    bool printFlagLinearSearch = false;
-    bool printFlagHashIndexSearch = false;
+    //bool printFlagLinearSearch = false;
+    //bool printFlagHashIndexSearch = false;
 
     read_file("pp-2024.csv");  // First load
     printf("Total records appneded: %zu\n", table_size);
@@ -21,7 +21,7 @@ int main() {
     read_file("pp-2023.csv");  // Second load (append to existing table)
     printf("Total records appneded: %zu\n", table_size);
 
-
+/*
     // --- Create index on 'street' field ---
     IndexEntry** index_on_street = createIndexOnStreet(table, table_size);
     printf("\nHash index on street created.\n");
@@ -59,6 +59,6 @@ int main() {
     // Free memory at end
     free_index(index_on_street);
     free_table();
-
+    */
     return 0;
 }
