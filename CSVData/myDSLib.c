@@ -221,3 +221,100 @@ void read_file(const char *filename){
     
     fclose(pfile);
 }
+
+IndexEntry **createIndexOnStreet(Record *allRecords, size_t numRecords){
+    IndexEntry **index = calloc(INDEX_SIZE, sizeof(IndexEntry *));
+
+    if (!index){
+        printf(stderr, "Failed to allocate memory");
+        return NULL;
+    }
+
+    for (size_t i = 0; i < numRecords; i++){
+        IndexEntry *entry = malloc(sizeof(IndexEntry));
+        char *streetName = allRecords[i].street;
+        unsigned int hash = hash_string(streetName);
+
+        if (!entry){
+            printf(stderr, "Cannot allocate memory");
+            return index;
+        }
+
+        (*entry).key = strdup(streetName);
+
+        if(!(*entry).key){
+            printf("Could not assign street name to entry");
+            free(entry);
+            return index;
+        }
+
+        (*entry).record_ptr = &allRecords[i];
+        (*entry).next = index[hash];
+        index[hash] = entry;
+    }
+    return index;
+}
+
+int count_unused_slots(IndexEntry **index){
+    int unused = 0;
+    for (int i = 0; i < INDEX_SIZE; i++){
+        if (index[i] == NULL){
+            unused++;
+        }
+    }
+    return unused;
+}
+
+void free_index(IndexEntry **index){
+    if(!index){
+        return;
+    }
+
+    for (int i = 0; i < INDEX_SIZE; i++){
+        IndexEntry *current = index[i];
+        while (current){
+            IndexEntry *next = (*current).next;
+            free((*current).key);
+            free(current);
+            current = next;
+        }
+    }
+    free(index);
+}
+
+void free_table(void){
+    if (!table){
+        return;
+    }
+    for (size_t i = 0; i < table_size; i++){
+        free(table[i].district);
+    }
+    free(table);
+    table = NULL;
+    table_size = 0;
+}
+
+void linearSearchStreet(Record *table, size_t table_size, const char *target){
+    if (!table){
+        return;
+    }
+
+    for (size_t i = 0; i < table_size; i++){
+        if (strcmp(table[i].street, target)){
+            printf("Found (linear search): Street = %s, Price = %u, Postcode = %s, Date = %4d-%2d-%2d,",table[i].street, table[i].price, table[i].postcode, table[i].date.year, table[i].date.month, table[i].date.day);
+        }
+    }
+}
+
+void searchStreet(IndexEntry **index, const char *target){
+    unsigned int hash = hash_string(target);
+    IndexEntry *current = index[hash];
+    while (current){
+        if(strcmp(target, (*current).key)){
+            Record *r = (*current).record_ptr;
+            printf("Found (hash): Street = %s, Price = %u, Postcode = %s, Date = %4d-%2d-%2d,", (*r).street,(*r).price,(*r).postcode,(*r).date.year,(*r).date.month,(*r).date.day);
+        }
+
+        current = (*current).next;
+    }
+}

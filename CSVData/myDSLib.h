@@ -55,6 +55,6 @@ extern size_t table_size;// DO NOT CHANGE: A global variable showing the number 
 
 void read_file(const char *filename);
 
-IndexEntry **build_index(Record *allRecords, size_t numRecords);
+IndexEntry **createIndexOnStreet(Record *allRecords, size_t numRecords);
 
 #endif
